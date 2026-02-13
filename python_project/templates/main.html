@@ -5,31 +5,192 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jagadish Poudel</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 0; background: #f0f0f0;}
-        header, footer { background: #4CAF50; color: white; text-align: center; padding: 10px;}
-        nav a { margin: 0 10px; color: white; text-decoration: none; }
-        main { max-width: 800px; margin: 24px auto; padding: 10px; background: white;}
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+            padding: 30px 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+
+        nav {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        nav a, nav button {
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            border: 2px solid white;
+            border-radius: 5px;
+            cursor: pointer;
+            background: transparent;
+            transition: all 0.3s;
+            font-size: 1em;
+            font-weight: bold;
+        }
+
+        nav a:hover, nav button:hover {
+            background: white;
+            color: #667eea;
+            transform: translateY(-2px);
+        }
+
+        nav button {
+            border: none;
+            background: #ff6b6b;
+        }
+
+        nav button:hover {
+            background: #ff5252;
+            color: white;
+        }
+
+        main {
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 30px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        section {
+            margin-bottom: 30px;
+        }
+
+        section h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.8em;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        section p {
+            color: #555;
+            line-height: 1.6;
+            font-size: 1.05em;
+        }
+
+        footer {
+            background: #333;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            margin-top: 40px;
+        }
+
+        footer p {
+            margin: 0;
+        }
+
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        .alert.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.8em;
+            }
+
+            nav {
+                flex-direction: column;
+            }
+
+            nav a, nav button {
+                width: 100%;
+                text-align: center;
+            }
+
+            main {
+                margin: 20px;
+                padding: 20px;
+            }
+        }
     </style>
 </head>
 <body>
     <header>
-    <h1>{{name}}</h1>
-    <nav>
-        <a href="">Home</a>
-        <a href="skills">Skills</a>
-    </nav>
-</header>
+        <h1>{{name}}</h1>
+        <nav>
+            <a href="/">Home</a>
+            <a href="/skills">Skills</a>
+            <a href="/admin" style="background: #ff9800;">Admin Dashboard</a>
+        </nav>
+    </header>
 
-<main>
-    <section id="skills">
-        <h2>Flutter</h2>
-        <p>A Senior Flutter Developer.</p>
-        <h2>Django</h2>
-        <p>A Django Beginner.</p>
-    </section>
-</main>
-<footer>
-    <p>&copy; 2026 Jagadish Poudel</p>
-</footer>
+    <main>
+        <div class="alert info">
+            <strong>📱 Skills/Todo App:</strong> Full-stack application with Flutter frontend and Django backend featuring user authentication, CRUD operations, and admin dashboard.
+        </div>
+
+        <section id="about">
+            <h2>👨‍💻 About</h2>
+            <p>A Full-Stack Developer proficient in Flutter for mobile applications and Django for backend development. Currently building modern, scalable applications with real-time features and comprehensive admin systems.</p>
+        </section>
+
+        <section id="skills">
+            <h2>🎯 Technical Skills</h2>
+            
+            <h3 style="color: #667eea; margin-top: 20px;">Flutter Development</h3>
+            <p>Dart, Flutter, Provider, Riverpod, Bloc, State Management, Responsive UI, Native Integration, Dio HTTP Client, Secure Storage</p>
+
+            <h3 style="color: #667eea; margin-top: 20px;">Django Backend</h3>
+            <p>Python, Django, Django REST Framework, Token Authentication, Database Management, Admin Dashboard, Template Development, REST APIs</p>
+
+            <h3 style="color: #667eea; margin-top: 20px;">Database & Tools</h3>
+            <p>SQLite, PostgreSQL, Git, GitHub, VS Code, Postman, Firebase, Secure Communication</p>
+        </section>
+
+        <section id="project">
+            <h2>📁 Current Project</h2>
+            <p><strong>Skills/Todo Manager App</strong></p>
+            <p>A complete full-stack application featuring:</p>
+            <ul style="margin-left: 20px; line-height: 2;">
+                <li>✓ User Authentication (Register/Login)</li>
+                <li>✓ Token-based Authorization</li>
+                <li>✓ CRUD Operations for Skills/Todos</li>
+                <li>✓ User-specific Data Isolation</li>
+                <li>✓ Admin Dashboard for System Management</li>
+                <li>✓ Delete Users and Skills Management</li>
+                <li>✓ Responsive Design</li>
+                <li>✓ Error Handling & Validation</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Jagadish Poudel - Full Stack Developer</p>
+    </footer>
 </body>
 </html>

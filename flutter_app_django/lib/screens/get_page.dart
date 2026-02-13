@@ -4,31 +4,66 @@ import 'package:flutter_app_django/model/parse_skills.dart';
 import 'package:flutter_app_django/model/skills_model.dart';
 
 class GetPage extends StatefulWidget {
-  const GetPage({super.key});
+  final String token;
+
+  const GetPage({super.key, required this.token});
 
   @override
   State<GetPage> createState() => _GetPageState();
 }
 
 class _GetPageState extends State<GetPage> {
-  final Dio dio = Dio();
+  final Dio dio = Dio(
+    BaseOptions(
+      validateStatus: (status) => true,
+    ),
+  );
 
   Future<Map<String, dynamic>> getRequest() async {
-    final response = await dio.get('http://127.0.0.1:8000/skills/api/');
-    return response.data;
+    try {
+      final response = await dio.get(
+        'http://127.0.0.1:8000/skills/api/',
+        options: Options(
+          headers: {'Authorization': 'Token ${widget.token}'},
+        ),
+      );
+      
+      if (response.statusCode == 200) {
+        return response.data;
+      } else {
+        throw Exception('Error: ${response.statusCode} - ${response.data}');
+      }
+    } catch (e) {
+      print('Error fetching skills: $e');
+      rethrow;
+    }
   }
 
   Future<void> deleteSkill(int skillId) async {
     try {
-      await dio.delete('http://127.0.0.1:8000/skills/api/$skillId/delete/');
-      setState(() {});
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Skill deleted successfully!')),
+      final response = await dio.delete(
+        'http://127.0.0.1:8000/skills/api/$skillId/delete/',
+        options: Options(
+          headers: {'Authorization': 'Token ${widget.token}'},
+        ),
       );
+      
+      if (response.statusCode == 204 || response.statusCode == 200) {
+        if (mounted) {
+          setState(() {});
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Skill deleted successfully!')),
+          );
+        }
+      } else {
+        throw Exception('Error: ${response.statusCode} - ${response.data}');
+      }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error deleting skill: $e')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error deleting skill: $e')),
+        );
+      }
     }
   }
 
@@ -71,22 +106,34 @@ class _GetPageState extends State<GetPage> {
           TextButton(
             onPressed: () async {
               try {
-                await dio.put(
+                final response = await dio.put(
                   'http://127.0.0.1:8000/skills/api/$skillId/',
                   data: {
                     'name': nameController.text,
                     'skill': skillController.text,
                   },
+                  options: Options(
+                    headers: {'Authorization': 'Token ${widget.token}'},
+                  ),
                 );
-                Navigator.pop(context);
-                setState(() {});
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Skill updated successfully!')),
-                );
+                
+                if (response.statusCode == 200) {
+                  if (mounted) {
+                    Navigator.pop(context);
+                    setState(() {});
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Skill updated successfully!')),
+                    );
+                  }
+                } else {
+                  throw Exception('Error: ${response.statusCode} - ${response.data}');
+                }
               } catch (e) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Error updating skill: $e')),
-                );
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Error updating skill: $e')),
+                  );
+                }
               }
             },
             child: const Text('Update'),
@@ -113,7 +160,7 @@ class _GetPageState extends State<GetPage> {
                 print("Error fetching data: ${snapshot.error}");
                 return Center(child: Text("Error fetching data: ${snapshot.error}"));
               } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                return const Center(child: Text("No data available"));
+                return const Center(child: Text("No skills yet. Start adding some!"));
               } else {
                 Map<String, dynamic> data = snapshot.data!;
                 List<MySkills> skills = [];

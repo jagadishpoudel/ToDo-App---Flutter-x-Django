@@ -6,33 +6,67 @@ import 'package:flutter_app_django/model/parse_skills.dart';
 import 'package:flutter_app_django/model/skills_model.dart';
 
 class PostPage extends StatefulWidget {
-  const PostPage({super.key});
+  final String token;
+
+  const PostPage({super.key, required this.token});
 
   @override
   State<PostPage> createState() => _PostPageState();
 }
 
 class _PostPageState extends State<PostPage> {
-  final Dio dio = Dio();
+  final Dio dio = Dio(
+    BaseOptions(
+      validateStatus: (status) => true,
+    ),
+  );
 
   Future<Map<String, dynamic>> postRequest(String number) async {
-    final response = await dio.post(
-      'http://127.0.0.1:8000/skills/api/',
-      data: {'number': number},
-      options: Options(headers: {'Content-Type': 'application/json'}),
-    );
+    try {
+      final response = await dio.post(
+        'http://127.0.0.1:8000/skills/api/',
+        data: {'number': number},
+        options: Options(
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Token ${widget.token}'
+          },
+        ),
+      );
 
-    return response.data;
+      if (response.statusCode == 200) {
+        return response.data;
+      } else {
+        throw Exception('Error: ${response.statusCode} - ${response.data}');
+      }
+    } catch (e) {
+      print('Error in postRequest: $e');
+      rethrow;
+    }
   }
 
   Future<Map<String, dynamic>> postNewSkill(String name, String skills) async {
-    final response = await dio.post(
-      'http://127.0.0.1:8000/skills/api/',
-      data: {'name': name, 'skill': skills},
-      options: Options(headers: {'Content-Type': 'application/json'}),
-    );
+    try {
+      final response = await dio.post(
+        'http://127.0.0.1:8000/skills/api/',
+        data: {'name': name, 'skill': skills},
+        options: Options(
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Token ${widget.token}'
+          },
+        ),
+      );
 
-    return response.data;
+      if (response.statusCode == 201 || response.statusCode == 200) {
+        return response.data;
+      } else {
+        throw Exception('Error: ${response.statusCode} - ${response.data}');
+      }
+    } catch (e) {
+      print('Error in postNewSkill: $e');
+      rethrow;
+    }
   }
 
   TextEditingController nameController = TextEditingController();
@@ -107,12 +141,22 @@ class _PostPageState extends State<PostPage> {
                           return;
                         }
                         
-                        await postNewSkill(name, skillsText);
-                        nameController.clear();
-                        skillsController.clear();
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Skill posted successfully!')),
-                        );
+                        try {
+                          await postNewSkill(name, skillsText);
+                          nameController.clear();
+                          skillsController.clear();
+                          if (mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Skill posted successfully!')),
+                            );
+                          }
+                        } catch (e) {
+                          if (mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Error posting skill: $e')),
+                            );
+                          }
+                        }
                       }, child: const Text("Post Skill"))
                       // ElevatedButton(
                       //   onPressed: () {
